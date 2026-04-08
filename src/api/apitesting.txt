@@ -1,0 +1,134 @@
+
+
+// export async function fetchGifs(query,page=1, per_page=15){
+//     // const res = await axios.get('https://api.klipy.com/api/v1/{app_key}/gifs/search',{
+//     const res = await axios.get('https://api.klipy.com/api/v1/{app_key}/gifs/search',{
+//         params:{query,page,per_page},
+//         headers:{'x-api-key': KLIPY_KEY,
+//         'Content-Type': 'application/json'}
+//     })
+//     return res.data;
+// }
+
+
+// export async function fetchGifs(page = 1, per_page = 15, customerId = '', locale = 'en') {
+  //     const res = await axios.get('https://api.klipy.com/api/v1/{app_key}/gifs/trending', {
+    //         params: {
+      //             // page: page,
+      //             // per_page: per_page,
+      //             // customer_id: customerId,
+      //             // locale: locale
+      //              page,per_page, customerId,locale
+      //         },
+      //         headers: {
+        //             'x-api-key': app_key,
+        //         }
+        //     });
+        //     return res.data;
+        // }
+        
+        // export async function fetchGifs(query, limit =20) {
+          //     const res = await axios.get('https://api.klipy.com/api/v1/{app_key}/gifs/search', {
+            //         params: {
+//              q:query, key:KLIPY_KEY, limit
+//         },
+//     });
+//     return res;
+// }
+
+
+
+function getOrCreateCustomerId() {
+  // 1. Check if we already have one saved
+  let id = localStorage.getItem('klipy_customer_id');
+  
+  // 2. If not, create a new one
+  if (!id) {
+    // Modern browsers have a built-in way to make unique IDs
+    id = crypto.randomUUID(); 
+    localStorage.setItem('klipy_customer_id', id);
+  }
+  
+  return id;
+}
+
+// How to use it in your fetch function:
+const my_id = getOrCreateCustomerId();
+
+// const app_key = KLIPY_KEY;
+
+// export async function fetchGifs(q, page = 1, per_page = 15) {
+//   const app_key = KLIPY_KEY;
+//   const customer_id = my_id;
+  
+//   // Construct parameters
+//   const params = new URLSearchParams({
+//     page: page,
+//     per_page: per_page,
+//     q: q,
+//     customer_id: customer_id,
+//     locale: "us", 
+//     content_filter: "medium"
+//   });
+
+//   const url = `https://api.klipy.com/api/v1/${app_key}/gifs/search?${params}`;
+
+//   const res = await fetch(url, {
+//     method: "GET",
+//     headers: {
+//       "Content-Type": "application/json"
+//     }
+//   });
+
+//   if (!res.ok) {
+//     throw new Error(`Klipy API error: ${res.status}`);
+//   }
+
+//   return await res.json();
+// }
+
+
+
+export async function fetchGifs(q, page = 1, per_page = 15) {
+  const app_key = KLIPY_KEY; // Ensure this is just the string, no 'Bearer' or 'key='
+  const customer_id = getOrCreateCustomerId();
+  
+  const params = new URLSearchParams({
+    page: page.toString(),
+    per_page: per_page.toString(),
+    q: q,
+    customer_id: customer_id,
+    locale: "en_US", // Format must be xx_XX
+    content_filter: "medium"
+  });
+
+  const url = `https://api.klipy.com/api/v1/${app_key}/gifs/search?${params}`;
+  
+  // Debugging: Copy this URL from your console and paste it into a new tab
+  console.log("Klipy Request URL:", url);
+
+  const res = await fetch(url, {
+    method: "GET",
+    mode: "cors", // Explicitly ask for CORS
+  });
+
+  if (res.status === 403) {
+    console.error("Access Forbidden: Check if localhost is whitelisted in Klipy Dashboard.");
+  }
+
+  if (!res.ok) {
+    throw new Error(`Klipy API error: ${res.status}`);
+  }
+
+  return await res.json();
+}
+
+
+
+
+
+in headers {
+
+}
+we weite content which is needed as as {api_key} and {customerid}
+and params we pass parameters to follow
